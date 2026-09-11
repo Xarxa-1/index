@@ -1,0 +1,34 @@
+name: Generar i publicar índex HTML
+
+on:
+  push:
+    branches:
+      - gh-pages  # Canviat de 'main' a 'gh-pages'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descarregar el codi
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages  # S'assegura de baixar la branca gh-pages
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Executar script d'índex
+        run: python generate_index.py
+
+      - name: Guardar i publicar canvis
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Auto-generat index.html" || exit 0
+          git push origin gh-pages
