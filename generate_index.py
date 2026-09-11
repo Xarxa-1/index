@@ -1,39 +1,36 @@
 import os
 
-# Extensions de fitxers que vols incloure a la llista
-ALLOWED_EXTENSIONS = ('.html', '.pdf', '.md')
-EXCLUDE_FILES = {'index.html'}
-
-def generate_index():
-    files_list = []
-    
+def generate_html_index():
+    html_files = []
     for root, dirs, files in os.walk('.'):
-        # Ignora carpetes ocultes com .git o .github
+        # Ignorar carpetes ocultes i sistemes de versió
         dirs[:] = [d for d in dirs if not d.startswith('.')]
-        
         for file in files:
-            if file in EXCLUDE_FILES:
-                continue
-            if file.endswith(ALLOWED_EXTENSIONS):
+            # Cerca qualsevol fitxer .html que no sigui el propi index.html
+            if file.endswith('.html') and file.lower() != 'index.html':
                 rel_path = os.path.relpath(os.path.join(root, file), '.')
-                # Utilitza barres enllà per a les URLs
-                url_path = rel_path.replace("\\", "/")
-                files_list.append(url_path)
+                # Normalitzar la ruta per a URL web (substituir \ per /)
+                web_path = rel_path.replace('\\', '/')
+                html_files.append(web_path)
 
-    files_list.sort()
+    html_files.sort()
 
-    html_content = """<!DOCTYPE html>
+    print(f"Fitxers HTML trobats: {len(html_files)}")
+    for f in html_files:
+        print(f" - {f}")
+
+    content = """<!DOCTYPE html>
 <html lang="ca">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Índex de Documents</title>
+    <title>Índex de Recursos</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 2rem; background: #f6f8fa; color: #24292f; }
-        h1 { border-bottom: 2px solid #d0d7de; padding-bottom: 0.5rem; }
+        body { font-family: system-ui, sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; line-height: 1.6; }
+        h1 { color: #2563eb; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; }
         ul { list-style-type: none; padding: 0; }
-        li { background: white; margin: 0.5rem 0; padding: 0.75rem 1rem; border-radius: 6px; border: 1px solid #d0d7de; }
-        a { color: #0969da; text-decoration: none; font-weight: 600; word-break: break-all; }
+        li { margin: 10px 0; padding: 8px; border-bottom: 1px solid #f3f4f6; }
+        a { color: #1d4ed8; text-decoration: none; font-size: 1.1rem; font-weight: 500; }
         a:hover { text-decoration: underline; }
     </style>
 </head>
@@ -41,17 +38,19 @@ def generate_index():
     <h1>Índex de Recursos</h1>
     <ul>
 """
-    
-    for file_path in files_list:
-        html_content += f'        <li><a href="{file_path}" target="_blank">{file_path}</a></li>\n'
-        
-    html_content += """    </ul>
+
+    if not html_files:
+        content += "        <li><em>No s'han trobat fitxers HTML en aquest repositori.</em></li>\n"
+    else:
+        for file_path in html_files:
+            content += f'        <li><a href="{file_path}" target="_blank">{file_path}</a></li>\n'
+
+    content += """    </ul>
 </body>
-</html>
-"""
+</html>"""
 
-    with open("index.html", "w", encoding="utf-8") as f:
-        f.write(html_content)
+    with open('index.html', 'w', encoding='utf-8') as f:
+        f.write(content)
 
-if __name__ == "__main__":
-    generate_index()
+if __name__ == '__main__':
+    generate_html_index()
