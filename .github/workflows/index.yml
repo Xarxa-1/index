@@ -1,1 +1,43 @@
+name: Generar Índex HTML Automàticament
 
+on:
+  push:
+    branches:
+      - gh-pages
+    paths:
+      - '**.html'
+      - 'generate_index.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate-index:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar el codi
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+
+      - name: Configurar Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Executar script d'índex
+        run: python generate_index.py
+
+      - name: Configurar git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Fer commit i push dels canvis
+        run: |
+          if git diff --quiet indexpagines.html 2>/dev/null || [ ! -f indexpagines.html ]; then
+            git add indexpagines.html
+            git commit -m "🤖 Auto-generat índex HTML"
+            git push origin gh-pages
+          fi
