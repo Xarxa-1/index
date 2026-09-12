@@ -6,8 +6,8 @@ def generate_html_index():
         # Ignorar carpetes ocultes i sistemes de versió
         dirs[:] = [d for d in dirs if not d.startswith('.')]
         for file in files:
-            # Cerca qualsevol fitxer .html que no sigui el propi index.html
-            if file.endswith('.html') and file.lower() != 'index.html':
+            # Cerca qualsevol fitxer .html que no sigui indexpagines.html
+            if file.endswith('.html') and file.lower() != 'indexpagines.html':
                 rel_path = os.path.relpath(os.path.join(root, file), '.')
                 # Normalitzar la ruta per a URL web (substituir \ per /)
                 web_path = rel_path.replace('\\', '/')
@@ -24,7 +24,7 @@ def generate_html_index():
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Índex de Recursos</title>
+    <title>Índex de Pàgines</title>
     <style>
         body { font-family: system-ui, sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; line-height: 1.6; }
         h1 { color: #2563eb; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; }
@@ -35,7 +35,7 @@ def generate_html_index():
     </style>
 </head>
 <body>
-    <h1>Índex de Recursos</h1>
+    <h1>Índex de Pàgines</h1>
     <ul>
 """
 
@@ -49,7 +49,7 @@ def generate_html_index():
 </body>
 </html>"""
 
-    with open('index.html', 'w', encoding='utf-8') as f:
+    with open('indexpagines.html', 'w', encoding='utf-8') as f:
         f.write(content)
 
 if __name__ == '__main__':
